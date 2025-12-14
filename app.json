@@ -30,7 +30,7 @@
     "android": {
       "newArchEnabled": true,
       "package": "com.primedeploy.openzerolauncher",
-      "versionCode": 7,
+      "versionCode": 8,
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/images/icon.png",
         "backgroundColor": "#FFFFFF"
