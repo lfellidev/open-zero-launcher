@@ -1,0 +1,49 @@
+name: Merge Dev to Main
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  test-and-merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for merging
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Merge dev to main
+        if: success()
+        run: |
+          # Configure git
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+          # Check if main branch exists
+          if git show-ref --verify --quiet refs/remotes/origin/main; then
+            # Main exists, checkout and merge
+            git checkout main
+            git pull origin main
+            git merge dev --no-ff -m "Merge dev into main after successful tests"
+          else
+            # Main doesn't exist, create from dev
+            git checkout -b main
+          fi
+
+          # Push the main branch
+          git push origin main
